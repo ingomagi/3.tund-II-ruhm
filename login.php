@@ -1,11 +1,7 @@
 <?php
-
-
-//
-
-
+	require ("../../config.php");
 //get ja posti muutujad
-
+//
 	//var_dump ($_GET);
 	//echo "<br>";
 	//var_dump ($_POST);
@@ -14,6 +10,8 @@
 	$genderError = "";
 	$ageError = "";
 	$langError = "";
+	$signupEmail="";
+	$signupAge="";
 	
 	//on üldse olemas
 	if(isset($_POST["signupEmail"]))
@@ -23,7 +21,10 @@
 		if(empty($_POST["signupEmail"]))
 		{
 			$signupEmailError = "see väli on kohustuslik";
-		}
+		}else
+			{ 
+			$signupEmail=$_POST["signupEmail"];
+			}
 	}
 	if(isset($_POST["signupPassword"]))
 	{
@@ -51,19 +52,55 @@
 		if(empty($_POST["age"]))
 		{
 		$ageError = " Unustasite sisestada oma sünnipäeva";
-		}
+		}else
+			{ 
+			$signupAge=$_POST["age"];
+			}
 	}
-	if(isset($_POST['Language'])) 
-	{
-		if(empty($_POST["Language"]))
+	
+	// peab olema email ja parool
+	//ja ühtegi errorit ei olema
+	if (  $signupEmailError == "" 
+			&&
+			$signupPasswordError == ""
+			&&
+			isset($_POST["signupEmail"])
+			&&
+			isset($_POST["signupPassword"])
+		)
 		{
-		$langError = " Unustasite valida keele";
+			//salvestame andmebaasi
+			echo "email: ".$signupEmail. "<br>";
+			echo "password: ".$_POST["signupPassword"]."<br>";
+			$password = hash("sha512", $_POST["signupPassword"]);
+			echo "password hashed: ".$password."<br>";
+			//echo $serverUsername;
+			//ühendus
+			$database = "if16_ingomagi";
+			$mysqli = new mysqli($serverHost, $serverUsername, $serverPassword, $database);
+			
+			$stmt = $mysqli->prepare("INSERT INTO user_sample (email, password) VALUES (?, ?)");
+			echo $mysqli->error;
+			//stringina 1 täht iga muutuja kohta, mis tüüp
+			// string - s
+			//integer - i
+			//float - (double -d)
+			//?asendada väärtusega
+			$stmt->bind_param("ss", $signupEmail, $password);
+			if ($stmt->execute()){
+					echo "salvestamine õnnestus";
+			}	else {echo "error ".$stmt->error;}
+	
+			$stmt->close ();
+			$mysqli->close();
+	
 		}
-	}
-
   ?>
  
 
+ 
+ 
+ 
 <!DOCTYPE html>
 <html>
 <head>
@@ -83,7 +120,8 @@
 <h1>Loo kasutaja</h1>
 
 <form method="POST">
-  <input name="signupEmail" placeholder = "e-mail" type ="e-mail"> <?php echo $signupEmailError;?> <br><br>
+
+  <input name="signupEmail" placeholder = "e-mail" type ="e-mail" value="<?php echo $signupEmail;?>"> <?php echo $signupEmailError;?> <br><br>
   <input name="signupPassword" placeholder = "parool" type ="password"> <?php echo $signupPasswordError;?>  <br><br>
 
   valige oma sugu
@@ -94,15 +132,15 @@
 	<option value="meesnaine">muu</option>
   </select><?php echo $genderError;?>  <br><br>
   Sisestage oma sünnipäev<br> 
-  <input name="age" placeholder = "päev/kuu/aasta" type ="age">
+  <input name="age" placeholder = "päev/kuu/aasta" type ="age"value="<?php echo $signupAge;?>">
   <?php echo $ageError;?>  <br><br>
 	Valige oma eelistatud suhtlus keel: <br>
-	<input type="radio" name="Language" value="EST"/>EST
+	<input type="radio" name="Language" value="EST" checked />EST
 	<input type="radio" name="Language" value="ENG"/>ENG
 	<?php echo $langError;?>
   <br><br><input type="submit" value="loo kasutaja">
   
-</form>
+</form> 
 
 
 
