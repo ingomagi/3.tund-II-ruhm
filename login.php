@@ -1,5 +1,15 @@
 <?php
-	require ("../../config.php");
+
+	require("../../../config.php");
+	require("functions.php");
+	
+	// kui on juba sisse loginud siis suunan data lehele
+	if (isset($_SESSION["userId"])){
+		
+		//suunan sisselogimise lehele
+		header("Location: data.php");
+		
+	}
 //get ja posti muutujad
 //
 	//var_dump ($_GET);
