@@ -1,6 +1,6 @@
 <?php
 
-	require("../../../config.php");
+	
 	require("functions.php");
 	
 	// kui on juba sisse loginud siis suunan data lehele
@@ -84,27 +84,18 @@
 			echo "password: ".$_POST["signupPassword"]."<br>";
 			$password = hash("sha512", $_POST["signupPassword"]);
 			echo "password hashed: ".$password."<br>";
-			//echo $serverUsername;
-			//ühendus
-			$database = "if16_ingomagi";
-			$mysqli = new mysqli($serverHost, $serverUsername, $serverPassword, $database);
 			
-			$stmt = $mysqli->prepare("INSERT INTO user_sample (email, password) VALUES (?, ?)");
-			echo $mysqli->error;
-			//stringina 1 täht iga muutuja kohta, mis tüüp
-			// string - s
-			//integer - i
-			//float - (double -d)
-			//?asendada väärtusega
-			$stmt->bind_param("ss", $signupEmail, $password);
-			if ($stmt->execute()){
-					echo "salvestamine õnnestus";
-			}	else {echo "error ".$stmt->error;}
-	
-			$stmt->close ();
-			$mysqli->close();
+			signUp($signupEmail, $password);
 	
 		}
+		$error ="";
+	if ( isset($_POST["loginEmail"]) && isset($_POST["loginPassword"]) && 
+		!empty($_POST["loginEmail"]) && !empty($_POST["loginPassword"])
+	  ) {
+		  
+		$error = login($_POST["loginEmail"], $_POST["loginPassword"]);
+		
+	}
   ?>
  
 

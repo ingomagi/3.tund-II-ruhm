@@ -1,8 +1,8 @@
 <?php
 	// functions.php
 	//var_dump($GLOBALS);
-	
-	// see fail, peab olema kıigil lehtedel kus 
+	require("../../../config.php");
+	// see fail, peab olema k√µigil lehtedel kus 
 	// tahan kasutada SESSION muutujat
 	session_start();
 	
@@ -12,7 +12,7 @@
 	
 	function signUp ($email, $password) {
 		
-		$database = "if16_romil";
+		$database = "if16_ingomagi";
 		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $database);
 		$stmt = $mysqli->prepare("INSERT INTO user_sample (email, password) VALUES (?, ?)");
 	
@@ -21,7 +21,7 @@
 		$stmt->bind_param("ss", $email, $password);
 		
 		if($stmt->execute()) {
-			echo "salvestamine ınnestus";
+			echo "salvestamine √µnnestus";
 		} else {
 		 	echo "ERROR ".$stmt->error;
 		}
@@ -36,7 +36,7 @@
 		
 		$error = "";
 		
-		$database = "if16_romil";
+		$database = "if16_ingomagi";
 		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $database);
 		$stmt = $mysqli->prepare("
 		SELECT id, email, password, created 
@@ -45,15 +45,15 @@
 	
 		echo $mysqli->error;
 		
-		//asendan k¸sim‰rgi
+		//asendan k√ºsim√§rgi
 		$stmt->bind_param("s", $email);
 		
-		//m‰‰ran v‰‰rtused muutujatesse
+		//m√§√§ran v√§√§rtused muutujatesse
 		$stmt->bind_result($id, $emailFromDb, $passwordFromDb, $created);
 		$stmt->execute();
 		
-		//andmed tulid andmebaasist vıi mitte
-		// on tıene kui on v‰hemalt ¸ks vaste
+		//andmed tulid andmebaasist v√µi mitte
+		// on t√µene kui on v√§hemalt √ºks vaste
 		if($stmt->fetch()){
 			
 			//oli sellise meiliga kasutaja
@@ -63,11 +63,11 @@
 				
 				echo "Kasutaja logis sisse ".$id;
 				
-				//m‰‰ran sessiooni muutujad, millele saan ligi
+				//m√§√§ran sessiooni muutujad, millele saan ligi
 				// teistelt lehtedelt
 				$_SESSION["userId"] = $id;
 				$_SESSION["userEmail"] = $emailFromDb;
-				
+				$_SESSION["message"]= "<h1>Tere tulemast!</h1>";
 				header("Location: data.php");
 				
 			}else {
@@ -83,5 +83,53 @@
 		
 		return $error;
 		
+	}
+	function saveCar ($plate, $color) {
+		
+		$database = "if16_ingomagi";
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $database);
+		$stmt = $mysqli->prepare("INSERT INTO autod (plate, color) VALUES (?, ?)");
+	
+		echo $mysqli->error;
+		
+		$stmt->bind_param("ss", $plate, $color);
+		
+		if($stmt->execute()) {
+			echo "salvestamine √µnnestus";
+		} else {
+		 	echo "ERROR ".$stmt->error;
+		}
+		
+		$stmt->close();
+		$mysqli->close();
+		
+	}
+	
+	
+	function getAllCars() {
+		$database = "if16_ingomagi";
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $database);
+	$stmt = $mysqli->prepare("
+	
+		SELECT id, plate, color
+		FROM autod
+		");
+	
+	
+	$stmt->bind_result($id, $plate, $color);
+	$stmt->execute();
+	$result = array();
+	while($stmt->fetch()) {
+		//echo $plate."<br>";	
+		$car = new stdClass();
+		$car->id = $id;
+		$car->plate = $plate;
+		$car->color = $color;
+		
+		array_push($result, $car);
+	}  
+		$stmt->close();
+		$mysqli->close();
+		return $result;
 	}
 ?>

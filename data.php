@@ -10,17 +10,45 @@
 		
 	}
 	
-	//kui on ?logout aadressireal siis login v‰lja
+	//kui on ?logout aadressireal siis login v√§lja
 	if (isset($_GET["logout"])) {
 		
 		session_destroy();
 		header("Location: login.php");
 		
 	}
+	$msg="";
+	if(isset($session["message"])){
+		$msg = $_SESSION["message"];
+		unset($_SESSION["message"]);
+	}
+	
+	if 	(isset($_POST["plate"])&&
+		isset($_POST["color"])&&
+		!empty($_POST["plate"])&&
+		!empty($_POST["color"])
+		) {
+		saveCar($_POST["plate"], $_POST["color"]);
+	}
+		$carData=getAllCars();  
+		var_dump($carData);
 ?>
 <h1>Data</h1>
-
+<?=$msg;?>
+<body bgcolor="#e6ffe6">
 <p>
 	Tere tulemast <?=$_SESSION["userEmail"];?>!
-	<a href="?logout=1">Logi v‰lja</a>
+	<a href="?logout=1">Logi v√§lja</a>
 </p>
+
+<form method="POST">
+
+  <input name="plate" placeholder = "numbri m√§rk" type ="text" value=""><br><br>
+   <input type="color" name="color"><br><br>
+   <input type="submit" value="Sisesta">
+  </form>
+  
+<h2>Autod</h2>
+
+
+  
