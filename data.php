@@ -30,8 +30,10 @@
 		) {
 		saveCar($_POST["plate"], $_POST["color"]);
 	}
-		$carData=getAllCars();  
+		$carData=getAllCars();
+	echo "<pre>";	
 		var_dump($carData);
+	echo "</pre>";
 ?>
 <h1>Data</h1>
 <?=$msg;?>
@@ -51,4 +53,30 @@
 <h2>Autod</h2>
 
 
-  
+  <?php
+  $html = "<table>";
+  $html .="<tr>";
+	$html .="<th>id</th>";
+	$html .="<th>plate</th>";
+	$html .="<th>color</th>";
+  $html .="</tr>";
+  foreach($carData as $c){
+	  //iga auto on $c
+	  //echo $c->plate."<br>";
+		$html .="<tr>";
+			$html .="<td>".$c->id."</td>";
+			$html .="<td>".$c->plate."</td>";
+			$html .="<td style='background-color:".$c->color."'>".$c->color."</td>";
+		$html .="</tr>";
+		
+	} echo $html;
+	
+	$html .= "</table>";
+	
+	$listHtml = "";
+	foreach($carData as $c){
+		$listHtml .= "<h1 style='color:".$c->color."'>".$c->plate."</h1>";
+	}
+	echo $listHtml;
+	
+?>
